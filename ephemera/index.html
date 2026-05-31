@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ephemera — Thoughts That Fade</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="particles"></div>
+  <main class="app">
+    <header>
+      <h1>Ephemera</h1>
+      <p class="subtitle">Your thoughts, fading like memories</p>
+    </header>
+    <form id="thought-form">
+      <textarea
+        id="thought-input"
+        placeholder="Write a thought before it escapes..."
+        rows="3"
+        required
+      ></textarea>
+      <button type="submit">Release</button>
+    </form>
+    <div id="thought-stream"></div>
+    <p id="empty" class="empty-state">No thoughts yet. They're waiting to exist — and then forget.</p>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,85 +1,66 @@
-const STORAGE_KEY = 'todos';
+import { TodoStore } from './TodoStore.js';
+import { TodoRenderer } from './TodoRenderer.js';
 
-let todos = loadTodos();
+const store = new TodoStore('todos');
 
 const form = document.getElementById('todo-form');
 const input = document.getElementById('todo-input');
-const list = document.getElementById('todo-list');
-const emptyState = document.getElementById('empty-state');
+const dateInput = document.getElementById('todo-date');
+const listEl = document.getElementById('todo-list');
+const emptyStateEl = document.getElementById('empty-state');
+const filtersEl = document.getElementById('filters');
+const clearBtn = document.getElementById('clear-completed');
+
+let currentFilter = 'all';
+let dragSourceId = null;
+
+const renderer = new TodoRenderer({ listEl, emptyStateEl, filtersEl, clearBtn });
+
+function refresh() {
+  renderer.render(
+    store.getFiltered(currentFilter),
+    store.getAll(),
+    currentFilter,
+    {
+      onToggle: (id) => { store.toggle(id); refresh(); },
+      onEdit: (id, text) => { const deleted = store.edit(id, text); if (deleted) refresh(); },
+      onDelete: (id) => { store.delete(id); refresh(); },
+      onDragStart: (id) => { dragSourceId = id; },
+      onDragEnd: () => { dragSourceId = null; },
+      onDrop: (toId) => {
+        if (dragSourceId && dragSourceId !== toId) {
+          store.reorder(dragSourceId, toId);
+          refresh();
+        }
+        dragSourceId = null;
+      }
+    }
+  );
+}
 
 form.addEventListener('submit', (e) => {
   e.preventDefault();
   const text = input.value.trim();
   if (!text) return;
-  addTodo(text);
+  store.add(text, dateInput.value || null);
   input.value = '';
+  dateInput.value = '';
   input.focus();
+  refresh();
 });
 
-function loadTodos() {
-  try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  } catch {
-    return [];
-  }
-}
+filtersEl.addEventListener('click', (e) => {
+  const btn = e.target.closest('.filter-btn');
+  if (!btn) return;
+  currentFilter = btn.dataset.filter;
+  filtersEl.querySelectorAll('.filter-btn').forEach((b) => b.classList.remove('active'));
+  btn.classList.add('active');
+  refresh();
+});
 
-function saveTodos() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-}
+clearBtn.addEventListener('click', () => {
+  store.clearCompleted();
+  refresh();
+});
 
-function addTodo(text) {
-  todos.push({
-    id: Date.now().toString(),
-    text,
-    completed: false,
-    createdAt: new Date().toISOString()
-  });
-  saveTodos();
-  renderTodos();
-}
-
-function toggleTodo(id) {
-  const todo = todos.find((t) => t.id === id);
-  if (todo) {
-    todo.completed = !todo.completed;
-    saveTodos();
-    renderTodos();
-  }
-}
-
-function deleteTodo(id) {
-  todos = todos.filter((t) => t.id !== id);
-  saveTodos();
-  renderTodos();
-}
-
-function renderTodos() {
-  list.innerHTML = '';
-  emptyState.hidden = todos.length > 0;
-
-  todos.forEach((todo) => {
-    const li = document.createElement('li');
-    li.className = 'todo-item' + (todo.completed ? ' completed' : '');
-
-    const checkbox = document.createElement('input');
-    checkbox.type = 'checkbox';
-    checkbox.checked = todo.completed;
-    checkbox.setAttribute('aria-label', `Mark "${todo.text}" as ${todo.completed ? 'incomplete' : 'complete'}`);
-    checkbox.addEventListener('change', () => toggleTodo(todo.id));
-
-    const span = document.createElement('span');
-    span.textContent = todo.text;
-
-    const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'delete-btn';
-    deleteBtn.textContent = '\u00d7';
-    deleteBtn.setAttribute('aria-label', `Delete "${todo.text}"`);
-    deleteBtn.addEventListener('click', () => deleteTodo(todo.id));
-
-    li.append(checkbox, span, deleteBtn);
-    list.appendChild(li);
-  });
-}
-
-renderTodos();
+refresh();
