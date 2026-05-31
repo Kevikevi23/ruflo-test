@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OIC Drill — Data Breach Tabletop Simulator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- SCENARIO SELECTION -->
+  <section id="view-select" class="view active">
+    <div class="container">
+      <header class="hero">
+        <h1>OIC Drill</h1>
+        <p class="tagline">Data Breach Tabletop Simulator</p>
+        <p class="sub">Select a scenario to begin your 48 hour incident response drill.</p>
+      </header>
+      <div id="scenario-cards" class="scenario-cards"></div>
+      <div id="resume-banner" class="resume-banner" hidden>
+        <p>You have a drill in progress.</p>
+        <button id="btn-resume">Resume Drill</button>
+        <button id="btn-discard" class="btn-secondary">Discard</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAME SCREEN -->
+  <section id="view-game" class="view">
+    <div class="status-bar">
+      <div class="status-item">
+        <span class="status-label">Time Remaining</span>
+        <span id="clock" class="status-value clock">48:00</span>
+      </div>
+      <div class="status-item">
+        <span class="status-label">Budget (JMD)</span>
+        <span id="budget" class="status-value budget">$2,500,000</span>
+      </div>
+      <div class="status-item scores-mini">
+        <span class="score-pill compliance" title="Legal Compliance"><span class="pill-label">Compliance</span> <span id="score-c">50</span></span>
+        <span class="score-pill containment" title="Containment"><span class="pill-label">Containment</span> <span id="score-t">50</span></span>
+        <span class="score-pill reputation" title="Reputation"><span class="pill-label">Reputation</span> <span id="score-r">50</span></span>
+      </div>
+      <button id="btn-log" class="btn-log" title="Decision Log">Log</button>
+    </div>
+    <div class="game-container">
+      <div id="decision-panel" class="decision-panel">
+        <h2 id="node-title"></h2>
+        <p id="node-desc"></p>
+        <div id="node-options" class="options"></div>
+      </div>
+      <div id="consequence-panel" class="consequence-panel" hidden>
+        <h3>Outcome</h3>
+        <p id="consequence-text"></p>
+        <div id="consequence-effects" class="effects"></div>
+        <button id="btn-continue">Continue</button>
+      </div>
+    </div>
+    <!-- Decision Log Drawer -->
+    <div id="log-drawer" class="log-drawer">
+      <div class="log-header">
+        <h3>Decision Log</h3>
+        <button id="btn-export-log" class="btn-secondary">Export</button>
+        <button id="btn-close-log" class="btn-close">&times;</button>
+      </div>
+      <div id="log-entries" class="log-entries"></div>
+    </div>
+    <div id="log-overlay" class="log-overlay"></div>
+  </section>
+
+  <!-- END SCREEN -->
+  <section id="view-end" class="view">
+    <div class="container end-container">
+      <h1>Drill Complete</h1>
+      <div id="end-grade" class="end-grade"></div>
+      <div id="end-scores" class="end-scores"></div>
+      <div id="end-summary" class="end-summary"></div>
+      <details class="letter-section">
+        <summary>OIC Breach Notification Letter</summary>
+        <div id="end-letter" class="end-letter"></div>
+      </details>
+      <details class="log-section">
+        <summary>Full Decision Log</summary>
+        <div id="end-log" class="end-log"></div>
+      </details>
+      <button id="btn-new-drill" class="btn-primary">New Drill</button>
+    </div>
+  </section>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
